@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "comfyg"
+version = "0.1.0"
+description = "Lightweight, easy config loading and type validation"
+readme = "README.md"
+authors = [{ name = "Baptiste Pestourie", email = "bpestourie@gmail.com" }]
+requires-python = ">=3.12"
+dependencies = ["exhausterr"]
+
+[project.optional-dependencies]
+tests = ["pytest"]
+typing = ["mypy", "typing_extensions"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.mypy]
+# Enable the experimental TypeForm PEP 747 feature permanently
+enable_incomplete_feature = ["TypeForm"]
+strict = true
