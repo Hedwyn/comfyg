@@ -52,7 +52,6 @@ if TYPE_CHECKING:
         (Literal[1, 2], 3, False),
     ],
 )
-def test_type_checks(
-    *, typehint: TypeForm[object], instance: object, valid: bool
-) -> None:
-    assert valid is check_type(instance, typehint), instance
+def test_type_checks(*, typehint: TypeForm[object], instance: object, valid: bool) -> None:
+    result = check_type(instance, typehint)
+    assert valid is bool(result), (typehint, instance, result)
