@@ -32,7 +32,9 @@ class Context(NamedTuple):
     expected_type: TypeForm[object]
 
     def __str__(self) -> str:
-        return f"While validating {self.received_object} against {self.expected_type!r}:"
+        expected_type = self.expected_type
+        typehint = expected_type.__name__ if isinstance(expected_type, type) else str(expected_type)
+        return f"While validating {self.received_object} against `{typehint}`:"
 
 
 @dataclass
@@ -47,7 +49,7 @@ class TypeValidationError(Error):
 @dataclass
 class LocalTypeValidationError(Error):
     context: Context
-    description = "{context}\n"
+    description = "* {context}\n"
 
     @classmethod
     def get_description(cls) -> str:
@@ -62,27 +64,26 @@ class LocalTypeValidationError(Error):
 @dataclass
 class ConcreteTypeError(LocalTypeValidationError):
     concrete_type: type
-    description = "{context}\nNot an instance of `{concrete_type}`"
-
+    description = "* {context}\n  -> Not an instance of `{concrete_type.__name__}.`"
 
 @dataclass
 class SizeMistmatchError(LocalTypeValidationError):
     expected_size: int
     obtained_size: int
     description = (
-        "{context}\nSize mismatches: expected {expected_size} items, received {obtained_size}"
+        "* {context}\n  -> Size mismatches: expected {expected_size} items, received {obtained_size}."
     )
 
 
 @dataclass
 class UnionValidationError(LocalTypeValidationError):
-    description = "{context}. Not an instance of any of the members in the Union"
+    description = "* {context}\n  -> Not an instance of any of the members in the Union."
     valid_types: tuple[TypeForm[object]]
 
 
 @dataclass
 class LiteralValidationError(LocalTypeValidationError):
-    description = "None of the accepted variants are matching {accepted_values}"
+    description = "None of the accepted variants are matching {accepted_values}."
     accepted_values: tuple[object, ...]
 
 
