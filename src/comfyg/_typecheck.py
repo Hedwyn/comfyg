@@ -66,13 +66,12 @@ class ConcreteTypeError(LocalTypeValidationError):
     concrete_type: type
     description = "* {context}\n  -> Not an instance of `{concrete_type.__name__}.`"
 
+
 @dataclass
 class SizeMistmatchError(LocalTypeValidationError):
     expected_size: int
     obtained_size: int
-    description = (
-        "* {context}\n  -> Size mismatches: expected {expected_size} items, received {obtained_size}."
-    )
+    description = "* {context}\n  -> Size mismatches: expected {expected_size} items, received {obtained_size}."
 
 
 @dataclass
