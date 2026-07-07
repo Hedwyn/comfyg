@@ -11,6 +11,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
+    Annotated,
     Any,
     Literal,
     NamedTuple,
@@ -171,6 +172,10 @@ def _check_type(  # noqa: C901, PLR0911, PLR0912
     origin = get_origin(expected) or expected
     type_args = get_args(expected)
 
+    # Transparent `Annotated` wrapper: check against the underlying type.
+    if origin is Annotated:
+        return _check_type(instance, type_args[0])
+
     # Literal edge case: we shall not use type checks but equality
     if origin is Literal:
         any_valid = any((instance == arg) for arg in type_args)
@@ -192,7 +197,11 @@ def _check_type(  # noqa: C901, PLR0911, PLR0912
             ),
         )
     base_concrete_type = origin if (origin is not None and isinstance(origin, type)) else None
-    if base_concrete_type and not isinstance(instance, base_concrete_type):
+    if base_concrete_type is float:
+        # int is an accepted value for float-typed fields
+        if not isinstance(instance, int | float):
+            return Err(ConcreteTypeError(ctx, base_concrete_type))
+    elif base_concrete_type and not isinstance(instance, base_concrete_type):
         return Err(ConcreteTypeError(ctx, base_concrete_type))
     if not type_args:
         return Ok()

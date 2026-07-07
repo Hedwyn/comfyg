@@ -7,7 +7,7 @@ Verifies the recursive type checking logic.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 import pytest
 
@@ -18,13 +18,16 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    ["typehint", "instance", "valid"],
+    ("typehint", "instance", "valid"),
     [
         # base atomic types
         (int, 42, True),
         (float, 3.14, True),
         (int, 3.14, False),
         (str, "abcd", True),
+        # int is an accepted value for float-typed fields
+        (float, 42, True),
+        (float, "3.14", False),
         # dict
         (dict[str, int], {}, True),
         (dict[str, int], {"a": 0}, True),
@@ -35,7 +38,6 @@ if TYPE_CHECKING:
         (list[int], [1, 2, 3], True),
         (list[int], [1], True),
         (list[int], [1, "3"], False),
-        (list[int], ["1", "3"], False),
         (list[int], ["1", "3"], False),
         # tuple
         (tuple[int, float], (42, 3.14), True),
@@ -51,6 +53,12 @@ if TYPE_CHECKING:
         # Literals
         (Literal[1, 2], 1, True),
         (Literal[1, 2], 3, False),
+        # Annotated: transparently unwraps to the underlying type
+        (Annotated[int, "some metadata"], 42, True),
+        (Annotated[int, "some metadata"], "abcd", False),
+        (Annotated[float, "some metadata"], 42, True),
+        (Annotated[list[int], "some metadata"], [1, 2], True),
+        (Annotated[list[int], "some metadata"], [1, "2"], False),
     ],
 )
 def test_type_checks(*, typehint: TypeForm[object], instance: object, valid: bool) -> None:
