@@ -48,6 +48,14 @@ from ._core import (
     is_hidden,
     typecheck_instance,
 )
+from ._loader import (
+    ConfigLoader,
+    export_to_configparser,
+    export_to_ini_file,
+    import_from_configparser,
+    import_from_ini_file,
+    value_to_string,
+)
 from ._typecheck import (
     CollectionGetter,
     ConcreteTypeError,
@@ -85,6 +93,7 @@ __all__ = [
     "ConcreteTypeError",
     "ConfigAnnotationError",
     "ConfigCastError",
+    "ConfigLoader",
     "ConfigLoadingError",
     "ConfigValidationError",
     "ConfigValidator",
@@ -119,6 +128,8 @@ __all__ = [
     "check_type",
     "dict_flattener",
     "dict_key_flattener",
+    "export_to_configparser",
+    "export_to_ini_file",
     "flatten_iterable",
     "get_alias",
     "get_annotation",
@@ -131,6 +142,8 @@ __all__ = [
     "get_type_hint_actual_type",
     "get_type_hints_recursive",
     "get_validators",
+    "import_from_configparser",
+    "import_from_ini_file",
     "is_hidden",
     "iter_annotations",
     "iterate_dict_argument",
@@ -138,4 +151,5 @@ __all__ = [
     "iterate_list_argument",
     "set_nested",
     "typecheck_instance",
+    "value_to_string",
 ]
