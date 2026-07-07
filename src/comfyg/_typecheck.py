@@ -149,7 +149,10 @@ _SIZED_TYPES: dict[TypeForm[object], SizeFn] = {tuple: tuple.__len__}
 
 def check_type(
     instance: object,
-    expected: TypeForm[object],
+    # Note: `TypeForm[Any]` (not `TypeForm[object]`) works around a collapse in
+    # mypy's incomplete `TypeForm` support, where `TypeForm[object]` degrades to
+    # plain `type[object]` and rejects generic aliases like `list[int]`.
+    expected: TypeForm[Any],
 ) -> NoneOr[TypeValidationError | LocalTypeValidationError]:
     context = Context(instance, expected)
     match _check_type(instance, expected, context):
@@ -164,7 +167,7 @@ def check_type(
 
 def _check_type(  # noqa: C901, PLR0911, PLR0912
     instance: object,
-    expected: TypeForm[object],
+    expected: TypeForm[Any],
     context: Context | None = None,
 ) -> NoneOr[LocalTypeValidationError]:
     ctx = context or Context(instance, expected)
