@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "comfyg"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Lightweight, easy config loading and type validation"
 readme = "README.md"
 authors = [{ name = "Baptiste Pestourie", email = "bpestourie@gmail.com" }]
