@@ -55,17 +55,6 @@ from comfyg import import_from_ini_file
 config = import_from_ini_file(MyConfig, "config.ini")
 ```
 
-### Validation
-
-Validation runs automatically on instantiation via `__post_init__`. For batch changes, use a context manager:
-
-```python
-with config.check():
-    config.section_one.an_int = 42
-    config.section_one.a_float = 3.14
-# Validation is performed on context manager exit
-```
-
 ### Nested Sections
 
 ConfigValidators can contain other ConfigValidators for multi-level organization:
@@ -79,34 +68,23 @@ class NestedConfig(ConfigValidator):
 
 ## Scopes
 
-Use the `Scope` annotation to define how parameters should be exposed:
+Use the `DefaultScopes` annotation to define how parameters should be exposed:
 
 ```python
-from comfyg import Scope
+from comfyg import DefaultScopes
 
 @dataclass
 class Config(ConfigValidator):
-    basic_param: Annotated[int, Scope.BASIC] = 1
-    advanced_param: Annotated[int, Scope.ADVANCED] = 2
-    internal_param: Annotated[int, Scope.INTERNAL] = 3
-    hidden_param: Annotated[int, Scope.HIDDEN] = 4
+    basic_param: Annotated[int, DefaultScopes.BASIC] = 1
+    advanced_param: Annotated[int, DefaultScopes.ADVANCED] = 2
+    internal_param: Annotated[int, DefaultScopes.INTERNAL] = 3
+    hidden_param: Annotated[int, DefaultScopes.HIDDEN] = 4
 ```
 
 - **BASIC**: Always shown to users
 - **ADVANCED**: Advanced/developer level features
 - **INTERNAL**: For internal use, exported to config files
 - **HIDDEN**: Never exported, reserved for internal state
-
-## Dependencies
-
-Use the `Depends` annotation to make parameter visibility conditional:
-
-```python
-@dataclass
-class Config(ConfigValidator):
-    is_bidirectional: bool
-    max_discharge_current: Annotated[float, Depends("is_bidirectional")] = 0
-```
 
 ## Export & Import
 
@@ -121,11 +99,13 @@ export_to_ini_file(config, "config.ini")
 ### To Dictionary
 
 ```python
+from comfyg import DefaultScopes
+
 # With all parameters
-config_dict = config.dict_export(scope=Scope.HIDDEN)
+config_dict = config.dict_export(scope=DefaultScopes.HIDDEN)
 
 # Flattened (dot-separated keys)
-flat_dict = config.flat_dict_export(scope=Scope.HIDDEN)
+flat_dict = config.flat_dict_export(scope=DefaultScopes.HIDDEN)
 ```
 
 ### With Documentation
@@ -133,7 +113,7 @@ flat_dict = config.flat_dict_export(scope=Scope.HIDDEN)
 Export configuration with metadata:
 
 ```python
-meta = config.meta_export(scope=Scope.BASIC)
+meta = config.meta_export(scope=DefaultScopes.BASIC)
 # Includes type hints, defaults, validators, and documentation
 ```
 
