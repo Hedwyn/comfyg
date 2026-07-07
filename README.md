@@ -155,9 +155,7 @@ loader.save()
 
 This module implements its own type validation and casting logic without external dependencies. While similar libraries exist (like attrs and pydantic), this approach prioritizes:
 
-- **Lightweight**: Suitable for embedded environments
+- **Lightweight**: Only one dependency (exhausterr, to provide a railway-programming style API).
+- **Standard**: Works with plain, stdlib Python dataclasses (`@dataclass`)  does not introduce a 3rd-party dataclass wrapper. 
 - **Declarative**: Focus on type annotations as the source of truth
-- **Explicit**: No implicit type coercion (e.g., `"1"` ≠ `1`)
-
-@date: 23.08.2024  
-@author: Baptiste Pestourie
+- **Explicit**: Validation and casting are two separated pipelines, which you can individually control. 
