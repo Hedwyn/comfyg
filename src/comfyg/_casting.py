@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Annotated,
+    Any,
     Literal,
     NamedTuple,
     Self,
@@ -36,7 +37,10 @@ type CastStrategy = Literal["cfg", "json"]
 
 class CastContext(NamedTuple):
     received_value: object
-    expected_type: TypeForm[object]
+    # Note: `TypeForm[Any]` (not `TypeForm[object]`) avoids a collapse in mypy's
+    # incomplete `TypeForm` support that degrades `TypeForm[object]` to plain
+    # `type[object]`, which would reject generic aliases like `list[int]`.
+    expected_type: TypeForm[Any]
 
     def __str__(self) -> str:
         expected_type = self.expected_type
@@ -70,7 +74,7 @@ class ScalarCastError(LocalCastError):
 
 @dataclass
 class UnionCastError(LocalCastError):
-    tried_types: tuple[TypeForm[object], ...]
+    tried_types: tuple[TypeForm[Any], ...]
     description = "* {context}\n  -> Value matches none of the members in the Union."
 
 
