@@ -7,11 +7,11 @@ Verifies the recursive casting logic.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Literal, Optional
+from typing import TYPE_CHECKING, Annotated, Literal
 
 import pytest
 
-from comfyg._casting import CastStrategy, cast_value
+from comfyg import CastStrategy, cast_value
 from comfyg._utils import Converter
 
 if TYPE_CHECKING:
