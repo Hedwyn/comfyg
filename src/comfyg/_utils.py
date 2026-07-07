@@ -10,8 +10,9 @@ Mainly utilities to introspect `typing.Annotated` metadata and the
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
-from dataclasses import dataclass
+from collections.abc import Callable, Iterator, Mapping, MutableMapping
+from dataclasses import MISSING, dataclass
+from typing import Any
 
 type ConvertionFn[T] = Callable[[str], T]
 
@@ -68,3 +69,55 @@ def get_annotation[T](
     if strict and len(annotations) > 1:
         raise ValueError(f"Found more than one annotation of type {annotation_type} in {type_hint}")
     return annotations.pop()
+
+
+def dict_flattener(base_dict: dict[str, Any]) -> Iterator[tuple[list[str], Any]]:
+    for k, v in base_dict.items():
+        if (
+            v.__class__ is dict
+        ):  # faster than isinstance(), we are only dealing with pure-dicts here
+            yield from (([k] + keys, v) for keys, v in dict_flattener(v))
+        else:
+            yield [k], v
+
+
+def dict_key_flattener(base_dict: dict[str, Any]) -> Iterator[list[str]]:
+    for k, v in base_dict.items():
+        if (
+            v.__class__ is dict
+        ):  # faster than isinstance(), we are only dealing with pure-dicts here
+            yield from ([k, *keys] for keys in dict_key_flattener(v))
+        else:
+            yield [k]
+
+
+def get_nested(dict_like: Mapping[str, Any], *keys: str, default: Any = MISSING) -> Any:
+    """
+    Gets a value with arbitrary depth in a nested dictionary.
+    Follows the path given by keys, and creates missing  empty dictionaries
+    on the way if needed
+    """
+    next_element = dict_like
+    try:
+        for k in keys:
+            next_element = next_element[k]
+        return next_element
+    except KeyError:
+        if default is MISSING:
+            raise KeyError(f"{k} while accessing {'->'.join(keys)}")
+        return default
+
+
+def set_nested(dict_like: MutableMapping[str, Any], value: Any, *keys: str) -> None:
+    """
+    Sets a value with arbitrary depth in a nested dictionary.
+    Follows the path given by keys, and creates missing  empty dictionaries
+    on the way if needed
+    """
+    next_element = dict_like
+    if not keys:
+        raise ValueError("Must pass at least one key")
+    *parents, leaf = keys
+    for k in parents:
+        next_element = next_element.setdefault(k, {})
+    next_element[leaf] = value
