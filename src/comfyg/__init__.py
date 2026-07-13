@@ -50,10 +50,13 @@ from ._core import (
 )
 from ._loader import (
     ConfigLoader,
+    TomlConfigLoader,
     export_to_configparser,
     export_to_ini_file,
+    export_to_toml_file,
     import_from_configparser,
     import_from_ini_file,
+    import_from_toml_file,
     value_to_string,
 )
 from ._typecheck import (
@@ -116,6 +119,7 @@ __all__ = [
     "Range",
     "ScalarCastError",
     "SizeMistmatchError",
+    "TomlConfigLoader",
     "TypeResolutionError",
     "TypeValidationError",
     "UnionCastError",
@@ -130,6 +134,7 @@ __all__ = [
     "dict_key_flattener",
     "export_to_configparser",
     "export_to_ini_file",
+    "export_to_toml_file",
     "flatten_iterable",
     "get_alias",
     "get_annotation",
@@ -144,6 +149,7 @@ __all__ = [
     "get_validators",
     "import_from_configparser",
     "import_from_ini_file",
+    "import_from_toml_file",
     "is_hidden",
     "iter_annotations",
     "iterate_dict_argument",
